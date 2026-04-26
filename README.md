@@ -4,11 +4,11 @@ A ready-to-use template for building [Create](https://modrinth.com/mod/create) m
 
 ## What's Included
 
-- **NeoForge 1.21.1** with Create 6.0.9 dependency
+- **NeoForge 1.21.1** with Create 6.0.10 dependency
 - **Create Registrate** — Create's registration system, pre-configured
 - **Ponder & Flywheel** — Create's rendering and documentation libraries
 - **JEI** — recipe viewer integration (optional, compile-only)
-- **Mixin support** — pre-configured for client-side mixins
+- **Mixin support** — pre-configured mixins
 - **GitHub Actions** — automatic builds on push/PR
 - **Gradle 8.10** with configuration cache enabled
 
