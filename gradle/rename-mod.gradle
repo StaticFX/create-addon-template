@@ -1,0 +1,164 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
+
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.regex.Matcher
+import java.util.stream.Collectors
+
+/**
+ * One-shot template bootstrap. Renames every "Example" / "examplemod" reference in
+ * this template to your own mod, so a fresh clone becomes your project in one step:
+ *
+ *   ./gradlew renameMod --name "Sick Mod"
+ *   ./gradlew renameMod --name "Sick Mod" --id sickmod --group com.acme.sickmod
+ *
+ * It rewrites file contents, moves the Java package, renames Example*.java classes,
+ * renames the mixin config, and drops src/generated (regenerate with `runData`).
+ *
+ * This edits files in place and is not reversible — commit or stash first so you can
+ * review the diff / back out with git.
+ */
+class RenameModTask extends DefaultTask {
+
+    @Internal String newName
+    @Internal String newId
+    @Internal String newGroup
+    @Internal File projectRoot
+
+    @Option(option = 'name', description = 'New mod display name, e.g. --name "Sick Mod" (required)')
+    void setNewName(String v) { this.newName = v }
+
+    @Option(option = 'id', description = 'Override the derived mod id (default: name, lowercased, a-z0-9_)')
+    void setNewId(String v) { this.newId = v }
+
+    @Option(option = 'group', description = 'Override the base package/group (default: com.example.<id>)')
+    void setNewGroup(String v) { this.newGroup = v }
+
+    @TaskAction
+    void run() {
+        if (!newName?.trim()) {
+            throw new GradleException('Provide a name, e.g.  ./gradlew renameMod --name "Sick Mod"')
+        }
+
+        String display = newName.trim()
+        String pascal = display.split(/[^A-Za-z0-9]+/).findAll { it }
+                .collect { it.length() > 1 ? it[0].toUpperCase() + it[1..-1] : it.toUpperCase() }
+                .join('')
+        if (!pascal) {
+            throw new GradleException("Name '${display}' has no letters/digits to build a class name from.")
+        }
+
+        String modId = (newId?.trim()) ?: display.toLowerCase().replaceAll(/[^a-z0-9_]/, '')
+        if (!modId) {
+            throw new GradleException("Could not derive a mod id from '${display}'; pass one with --id")
+        }
+        if (modId == 'examplemod') {
+            logger.warn("Nothing to do: mod id is still 'examplemod'.")
+            return
+        }
+
+        String group = (newGroup?.trim()) ?: ("com.example." + modId)
+        String mainClass = pascal
+        final String oldGroup = 'com.example.examplemod'
+
+        // --- text substitutions, applied in order (most specific first) ---
+        Closure<String> transform = { String s ->
+            s = s.replace(oldGroup, group)                                       // package / group id
+            s = s.replace('ExampleMod', mainClass)                              // main class (before generic Example)
+            s = s.replaceAll('Example(?=[A-Z])', Matcher.quoteReplacement(pascal)) // Example<Class> prefixes only
+            s = s.replace('Example Create Addon', display)                      // mod_name display string
+            s = s.replace('examplemod', modId)                                  // namespace / resource folders / refmap
+            s = s.replace('example_', modId + '_')                              // registry ids (example_item -> <id>_item)
+            return s
+        }
+        // filenames only carry class names + the mixin config id
+        Closure<String> transformName = { String s ->
+            s = s.replace('ExampleMod', mainClass)
+            s = s.replaceAll('Example(?=[A-Z])', Matcher.quoteReplacement(pascal))
+            s = s.replace('examplemod', modId)
+            return s
+        }
+
+        logger.lifecycle("Renaming template -> name='${display}', id='${modId}', group='${group}', classes='${pascal}*'")
+
+        Path root = projectRoot.toPath()
+        Path srcJava = root.resolve('src/main/java')
+        Path mixins = root.resolve('src/main/resources/examplemod.mixins.json')
+
+        // 1. Rewrite file contents (config files + every .java).
+        List<Path> contentFiles = []
+        ['gradle.properties', 'README.md'].each {
+            Path p = root.resolve(it); if (Files.exists(p)) contentFiles << p
+        }
+        if (Files.exists(mixins)) contentFiles << mixins
+        if (Files.exists(srcJava)) {
+            Files.walk(srcJava).withCloseable { st ->
+                st.filter { Files.isRegularFile(it) && it.toString().endsWith('.java') }
+                        .forEach { contentFiles << it }
+            }
+        }
+        int rewritten = 0
+        contentFiles.each { Path p ->
+            String txt = new String(Files.readAllBytes(p), StandardCharsets.UTF_8)
+            String out = transform(txt)
+            if (out != txt) { Files.write(p, out.getBytes(StandardCharsets.UTF_8)); rewritten++ }
+        }
+
+        // 2. Rename Example*.java files (do this before moving the package dir).
+        if (Files.exists(srcJava)) {
+            List<Path> javaFiles = Files.walk(srcJava).withCloseable { st ->
+                st.filter { Files.isRegularFile(it) && it.toString().endsWith('.java') }
+                        .collect(Collectors.toList())
+            }
+            javaFiles.each { Path p ->
+                String nn = transformName(p.fileName.toString())
+                if (nn != p.fileName.toString()) Files.move(p, p.resolveSibling(nn))
+            }
+        }
+
+        // 3. Move the Java package: com/example/examplemod -> group path.
+        Path oldPkg = srcJava.resolve('com/example/examplemod')
+        Path newPkg = srcJava.resolve(group.replace('.', '/'))
+        if (Files.exists(oldPkg) && oldPkg != newPkg) {
+            Files.createDirectories(newPkg.parent)
+            Files.move(oldPkg, newPkg)
+        }
+        // prune now-empty leftovers (e.g. com/example when moving to a new group).
+        [srcJava.resolve('com/example'), srcJava.resolve('com')].each { Path d ->
+            if (Files.isDirectory(d)) {
+                boolean empty = Files.list(d).withCloseable { it.count() == 0L }
+                if (empty) Files.delete(d)
+            }
+        }
+
+        // 4. Rename the mixin config to <id>.mixins.json.
+        if (Files.exists(mixins)) {
+            Files.move(mixins, mixins.resolveSibling(modId + '.mixins.json'))
+        }
+
+        // 5. Drop generated resources — they still say "examplemod"; regenerate with runData.
+        Path generated = root.resolve('src/generated')
+        boolean droppedGen = false
+        if (Files.exists(generated)) {
+            Files.walk(generated).withCloseable { st ->
+                st.sorted(Comparator.reverseOrder()).forEach { Files.delete(it) }
+            }
+            droppedGen = true
+        }
+
+        logger.lifecycle("Done: ${rewritten} file(s) rewritten, package moved to '${group}'" +
+                (droppedGen ? ', src/generated cleared (run ./gradlew runData to regenerate).' : '.'))
+        logger.lifecycle("Review the changes with 'git diff', then delete this task and gradle/rename-mod.gradle.")
+    }
+}
+
+tasks.register('renameMod', RenameModTask) {
+    group = 'template'
+    description = 'Rename this template to your own mod. Usage: ./gradlew renameMod --name "Sick Mod"'
+    projectRoot = layout.projectDirectory.asFile
+}

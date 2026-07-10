@@ -1,0 +1,46 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "minecraft:iron_ingot"
+  },
+  "loops": 2,
+  "results": [
+    {
+      "id": "examplemod:example_result"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "examplemod:incomplete_example"
+        },
+        {
+          "item": "minecraft:copper_ingot"
+        }
+      ],
+      "results": [
+        {
+          "id": "examplemod:incomplete_example"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "examplemod:incomplete_example"
+        }
+      ],
+      "results": [
+        {
+          "id": "examplemod:incomplete_example"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "examplemod:incomplete_example"
+  }
+}

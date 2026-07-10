@@ -8,6 +8,9 @@ plugins {
 version = mod_version
 group = mod_group_id
 
+// Template bootstrap task: ./gradlew renameMod --name "Your Mod"
+apply from: 'gradle/rename-mod.gradle'
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -50,7 +53,7 @@ neoForge {
 
         data {
             data()
-            programArguments.addAll '--mod', project.mod_id, '--server', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
         configureEach {

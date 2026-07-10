@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "examplemod:block/example_kinetic_block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "examplemod:block/example_kinetic_block"
+    },
+    "axis=z": {
+      "model": "examplemod:block/example_kinetic_block",
+      "x": 90,
+      "y": 180
+    }
+  }
+}
