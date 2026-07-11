@@ -1,5 +1,6 @@
 package com.example.examplemod.content.ponder;
 
+import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
@@ -15,6 +16,8 @@ public class ExamplePonderScenes {
      * structure above it, panning the camera, and drawing outlines with attached text.
      */
     public static void examplePonder(SceneBuilder scene, SceneBuildingUtil util) {
+        var helper = new CreateSceneBuilder(scene);
+
         // The first argument is the scene id: it prefixes this scene's lang keys
         // (ponder.examplemod.example_ponder.*), so keep it matching the storyboard id.
         scene.title("example_ponder", "Welcome to the Example Addon");
@@ -56,9 +59,22 @@ public class ExamplePonderScenes {
 
         scene.overlay().showOutlineWithText(arms, 80)
                 .colored(PonderPalette.BLUE)
+                .attachKeyFrame()
                 .text("Two Mechanical Arms flank the sign, proving Create's own blocks work too")
                 .pointAt(util.vector().topOf(2, 1, 1));
-        scene.idle(90);
+        scene.idle(45);
+
+        helper.world().setKineticSpeed(arms, 64);
+
+        scene.idle(45);
+
+        scene.overlay().showOutlineWithText(arms, 80)
+                .colored(PonderPalette.BLUE)
+                .text("You can also apply kinetic speeds to certain blocks")
+                .pointAt(util.vector().topOf(2, 1, 1));
+
+        scene.idle(45);
+
 
         // markAsFinished lets the "next scene" prompt appear without waiting out the last
         // text window; reaching the end of the method would mark it finished anyway.

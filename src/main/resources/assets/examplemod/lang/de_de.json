@@ -23,5 +23,6 @@
 	"examplemod.ponder.example_ponder.header": "Willkommen bei der Beispiel-Erweiterung",
 	"examplemod.ponder.example_ponder.text_1": "Jeder Block hier wird aus example_ponder.nbt geladen",
 	"examplemod.ponder.example_ponder.text_2": "Blockentitäten wie dieses Schild werden dargestellt und ticken wie in der Welt",
-	"examplemod.ponder.example_ponder.text_3": "Zwei mechanische Arme flankieren das Schild und beweisen, dass auch Creates eigene Blöcke funktionieren"
+	"examplemod.ponder.example_ponder.text_3": "Zwei mechanische Arme flankieren das Schild und beweisen, dass auch Creates eigene Blöcke funktionieren",
+	"examplemod.ponder.example_ponder.text_4": "Du kannst auch den blöcken rpm werte geben"
 }
