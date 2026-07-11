@@ -5,8 +5,10 @@ import com.example.examplemod.content.kinetics.ExampleKineticBlock;
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.data.BlockStateGen;
+import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -25,8 +27,7 @@ public class AllBlocks {
             .initialProperties(() -> Blocks.ANDESITE)
             .properties(p -> p.noOcclusion())
             .blockstate((ctx, prov) -> {
-                ModelFile model = prov.models().cubeColumn(
-                        ctx.getName(),
+                ModelFile model = encasedShaftModel(prov, ctx.getName(),
                         ResourceLocation.withDefaultNamespace("block/stripped_spruce_log"),
                         ResourceLocation.withDefaultNamespace("block/spruce_planks"));
                 BlockStateGen.axisBlock(ctx, prov, state -> model);
@@ -47,8 +48,7 @@ public class AllBlocks {
             .initialProperties(() -> Blocks.POLISHED_ANDESITE)
             .properties(p -> p.noOcclusion())
             .blockstate((ctx, prov) -> {
-                ModelFile model = prov.models().cubeColumn(
-                        ctx.getName(),
+                ModelFile model = encasedShaftModel(prov, ctx.getName(),
                         ResourceLocation.withDefaultNamespace("block/polished_andesite"),
                         ResourceLocation.withDefaultNamespace("block/chiseled_polished_blackstone"));
                 BlockStateGen.axisBlock(ctx, prov, state -> model);
@@ -58,6 +58,33 @@ public class AllBlocks {
             .item()
             .build()
             .register();
+
+    /**
+     * Builds an "encased shaft" style model: a casing box inset by 2px on the rotation
+     * axis so the shaft rendered by ExampleShaftRenderer visibly pokes out of both ends.
+     * The box is authored along the Y axis (caps on top and bottom); BlockStateGen.axisBlock
+     * rotates it to match the block's AXIS, using the same rotations as Create's shaft, so
+     * the static casing and the spinning shaft always line up. Side faces use the casing
+     * texture, the two end caps use the cap texture.
+     */
+    private static ModelFile encasedShaftModel(RegistrateBlockstateProvider prov, String name,
+                                               ResourceLocation casing, ResourceLocation cap) {
+        return prov.models()
+                .withExistingParent(name, ResourceLocation.withDefaultNamespace("block/block"))
+                .texture("particle", casing)
+                .texture("casing", casing)
+                .texture("cap", cap)
+                .element()
+                    // Inset 3px on the top and bottom (the Y axis) so the shaft pokes out.
+                    .from(0, 3, 0).to(16, 13, 16)
+                    .face(Direction.NORTH).texture("#casing").end()
+                    .face(Direction.SOUTH).texture("#casing").end()
+                    .face(Direction.WEST).texture("#casing").end()
+                    .face(Direction.EAST).texture("#casing").end()
+                    .face(Direction.UP).texture("#cap").end()
+                    .face(Direction.DOWN).texture("#cap").end()
+                    .end();
+    }
 
     public static void register() {
         // Force class loading to trigger Registrate calls

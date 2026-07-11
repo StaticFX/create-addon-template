@@ -13,10 +13,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Block entity for the example generator. Extending GeneratingKineticBlockEntity makes
- * it a source of rotation rather than a consumer. Two things define it: getGeneratedSpeed
- * returns the RPM it produces (the sign sets the direction), and its capacity is
- * registered in ExampleMod. Here the speed is a constant; making it configurable is a
- * common next step.
+ * it a source of rotation rather than a consumer. Three things define it: getGeneratedSpeed
+ * returns the RPM it produces (the axis sets the direction), initialize seeds that rotation
+ * into the network on load, and its capacity is registered in AllBlocks. Here the speed is a
+ * constant; making it configurable is a common next step.
  */
 public class ExampleGeneratorBlockEntity extends GeneratingKineticBlockEntity {
 
@@ -25,6 +25,20 @@ public class ExampleGeneratorBlockEntity extends GeneratingKineticBlockEntity {
 
     public ExampleGeneratorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    /**
+     * Pushes the generated rotation into the network when the block entity loads or is
+     * placed. Without this a generator's getGeneratedSpeed is never applied, so it stays at
+     * 0 RPM and nothing downstream turns. The guard mirrors Create's own generators: only
+     * (re)assert our speed if we aren't already being driven faster by another source.
+     */
+    @Override
+    public void initialize() {
+        super.initialize();
+        if (!hasSource() || getGeneratedSpeed() > getTheoreticalSpeed()) {
+            updateGeneratedRotation();
+        }
     }
 
     @Override

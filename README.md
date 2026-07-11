@@ -20,16 +20,18 @@ additions. All of their recipes and assets are produced by data generation
 
 - **SU-consuming kinetic block + goggle overlay** — `content/kinetics/ExampleKineticBlock` +
   `ExampleKineticBlockEntity`. An encased-shaft-style block that joins the kinetic
-  network and draws Stress Units. Its stress impact is registered in
-  `ExampleMod#registerStressValues` via `BlockStressValues.IMPACTS` (from the shared
-  `STRESS_IMPACT` constant), and it reuses Create's `KineticBlockEntityRenderer` to spin.
-  It overrides `addToGoggleTooltip` to add a live "Drawing stress" readout beneath the
-  default kinetic stats.
+  network and draws Stress Units. Its stress impact is registered on the block in
+  `AllBlocks` via `BlockStressValues.IMPACTS` (from the shared `STRESS_IMPACT` constant).
+  Its model is an inset casing and `ExampleShaftRenderer` spins a Create shaft that pokes
+  out of it, so the rotation is actually visible. It overrides `addToGoggleTooltip` to add
+  a live "Drawing stress" readout beneath the default kinetic stats.
 - **Kinetic generator + goggle overlay** — `content/kinetics/ExampleGeneratorBlock` +
   `ExampleGeneratorBlockEntity`. The counterpart source: it *adds* stress capacity
-  (`BlockStressValues.CAPACITIES`) and produces rotation via `getGeneratedSpeed()`,
-  and adds custom lines to the Engineer's Goggles tooltip
-  (`IHaveGoggleInformation#addToGoggleTooltip`).
+  (`BlockStressValues.CAPACITIES`, registered in `AllBlocks`) and produces rotation via
+  `getGeneratedSpeed()`. Crucially it overrides `initialize()` to call
+  `updateGeneratedRotation()` — without that a generator never pushes its speed into the
+  network and nothing turns. It shares `ExampleShaftRenderer` and adds custom lines to the
+  Engineer's Goggles tooltip (`IHaveGoggleInformation#addToGoggleTooltip`).
 - **Display Link source** — `content/display/ExampleDisplaySource` + `AllDisplaySources`.
   A `DisplaySource` that reports a block's kinetic speed onto a Display Board; attached
   to the generator in `AllBlocks` via `.transform(DisplaySource.displaySource(...))`.
@@ -59,6 +61,12 @@ additions. All of their recipes and assets are produced by data generation
   `en_us.json` that Registrate generates for block/item names, so `./gradlew runData` writes a
   single lang file. Add copy by editing a partial (or dropping a new one and listing it in
   `ExampleLangMerger`) — never by putting English in Java.
+- **Additional languages** — `assets/examplemod/lang/de_de.json` is a worked German
+  translation. Registrate only *generates* `en_us`, so every other language is a plain static
+  file (exactly how Create ships its Crowdin translations): copy the keys from the generated
+  `en_us.json`, translate the values, and Minecraft overlays them when that language is
+  selected, falling back to `en_us` for any key you leave out. It needs no datagen — the file
+  is loaded as-is. (`_underscores_` and `%s` placeholders must be kept in the translation.)
 
 Item models borrow existing vanilla textures so the template builds with **no `.png`
 files of its own** — swap the textures in `AllItems`/`AllBlocks` for your own art.

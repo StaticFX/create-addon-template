@@ -1,0 +1,27 @@
+{
+	"itemGroup.examplemod": "Beispiel Create-Erweiterung",
+	"itemGroup.examplemod.main_tab": "Hauptreiter",
+
+	"block.examplemod.example_kinetic_block": "Beispiel-Kinetikblock",
+	"block.examplemod.example_generator_block": "Beispiel-Generatorblock",
+
+	"item.examplemod.example_item": "Beispielgegenstand",
+	"item.examplemod.example_result": "Beispielergebnis",
+	"item.examplemod.incomplete_example": "Unvollständiges Beispiel",
+
+	"gui.examplemod.example_generator.generating": "Erzeugt Rotation",
+	"gui.examplemod.example_kinetic.consuming": "Verbraucht Belastung",
+	"gui.examplemod.rpm": "%s UPM",
+	"gui.examplemod.su": "%s SU",
+
+	"display_source.examplemod.example_source": "Kinetische Geschwindigkeit",
+
+	"item.examplemod.example_item.tooltip.summary": "Ein Vorführgegenstand für die _Beispiel-Erweiterung_.",
+	"item.examplemod.example_item.tooltip.condition1": "Wenn gehalten",
+	"item.examplemod.example_item.tooltip.behaviour1": "Zeigt diese Beschreibung – ermöglicht durch Creates _ItemDescription_-Tooltip-System.",
+
+	"examplemod.ponder.example_ponder.header": "Willkommen bei der Beispiel-Erweiterung",
+	"examplemod.ponder.example_ponder.text_1": "Jeder Block hier wird aus example_ponder.nbt geladen",
+	"examplemod.ponder.example_ponder.text_2": "Blockentitäten wie dieses Schild werden dargestellt und ticken wie in der Welt",
+	"examplemod.ponder.example_ponder.text_3": "Zwei mechanische Arme flankieren das Schild und beweisen, dass auch Creates eigene Blöcke funktionieren"
+}
