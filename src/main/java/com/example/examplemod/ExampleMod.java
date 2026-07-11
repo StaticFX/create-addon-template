@@ -2,7 +2,6 @@ package com.example.examplemod;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.example.examplemod.content.kinetics.ExampleKineticBlockEntity;
 import com.example.examplemod.content.ponder.ExamplePonderPlugin;
 import com.example.examplemod.datagen.ExampleCompactingRecipeGen;
 import com.example.examplemod.datagen.ExampleCrushingRecipeGen;
@@ -17,13 +16,14 @@ import com.example.examplemod.datagen.ExampleMixingRecipeGen;
 import com.example.examplemod.datagen.ExamplePressingRecipeGen;
 import com.example.examplemod.datagen.ExampleSequencedAssemblyGen;
 import com.example.examplemod.datagen.ExampleWashingRecipeGen;
-import com.simibubi.create.api.stress.BlockStressValues;
+import com.simibubi.create.content.kinetics.base.ShaftVisual;
 import com.tterrag.registrate.providers.ProviderType;
 import net.createmod.ponder.foundation.PonderIndex;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
+import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -75,9 +75,10 @@ public class ExampleMod {
 
     private void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.info("Client setup...");
-        // Ponder is client-only, so its plugin is registered here rather than in
-        // common setup.
-        event.enqueueWork(() -> PonderIndex.addPlugin(new ExamplePonderPlugin()));
+        event.enqueueWork(() -> {
+            // Ponder is client-only
+            PonderIndex.addPlugin(new ExamplePonderPlugin());
+        });
     }
 
     /**
