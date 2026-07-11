@@ -2,6 +2,7 @@ package com.example.examplemod;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.example.examplemod.content.kinetics.ExampleKineticBlockEntity;
 import com.example.examplemod.content.ponder.ExamplePonderPlugin;
 import com.example.examplemod.datagen.ExampleCompactingRecipeGen;
 import com.example.examplemod.datagen.ExampleCrushingRecipeGen;
@@ -9,6 +10,7 @@ import com.example.examplemod.datagen.ExampleCuttingRecipeGen;
 import com.example.examplemod.datagen.ExampleDeployingRecipeGen;
 import com.example.examplemod.datagen.ExampleEmptyingRecipeGen;
 import com.example.examplemod.datagen.ExampleFillingRecipeGen;
+import com.example.examplemod.datagen.ExampleLangMerger;
 import com.example.examplemod.datagen.ExampleHauntingRecipeGen;
 import com.example.examplemod.datagen.ExampleMillingRecipeGen;
 import com.example.examplemod.datagen.ExampleMixingRecipeGen;
@@ -16,6 +18,7 @@ import com.example.examplemod.datagen.ExamplePressingRecipeGen;
 import com.example.examplemod.datagen.ExampleSequencedAssemblyGen;
 import com.example.examplemod.datagen.ExampleWashingRecipeGen;
 import com.simibubi.create.api.stress.BlockStressValues;
+import com.tterrag.registrate.providers.ProviderType;
 import net.createmod.ponder.foundation.PonderIndex;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
@@ -50,13 +53,8 @@ public class ExampleMod {
 
         AllCreativeModeTabs.register();
         REGISTRATE.setCreativeTab(AllCreativeModeTabs.MAIN_TAB);
-        // Title for the creative tab (the tab's Component uses this key). Registered
-        // through Registrate so it ends up in the generated lang file with everything else.
-        REGISTRATE.addRawLang("itemGroup." + ID, "Example Create Addon");
-        // Goggle overlay text for the generator (see ExampleGeneratorBlockEntity).
-        REGISTRATE.addRawLang("gui.examplemod.example_generator.generating", "Generating rotation");
-        // Name shown for the Display Link source (see AllDisplaySources / ExampleDisplaySource).
-        REGISTRATE.addRawLang("display_source.examplemod.example_source", "Kinetic Speed");
+        registerLangPartials();
+        registerPonderLang();
         AllItems.register();
         AllDisplaySources.register();
         AllBlocks.register();
@@ -83,7 +81,8 @@ public class ExampleMod {
      */
     private void registerStressValues() {
         // Consumers register an IMPACT (SU drawn per RPM)...
-        BlockStressValues.IMPACTS.register(AllBlocks.EXAMPLE_KINETIC_BLOCK.get(), () -> 8.0);
+        BlockStressValues.IMPACTS.register(AllBlocks.EXAMPLE_KINETIC_BLOCK.get(),
+                () -> (double) ExampleKineticBlockEntity.STRESS_IMPACT);
         // ...generators register a CAPACITY (SU added to the network per RPM).
         BlockStressValues.CAPACITIES.register(AllBlocks.EXAMPLE_GENERATOR_BLOCK.get(), () -> 256.0);
     }
@@ -93,6 +92,30 @@ public class ExampleMod {
         // Ponder is client-only, so its plugin is registered here rather than in
         // common setup.
         event.enqueueWork(() -> PonderIndex.addPlugin(new ExamplePonderPlugin()));
+    }
+
+    /**
+     * Feeds the hand-authored language partials (assets/examplemod/lang/default/*.json)
+     * into Registrate's lang provider so runData merges them with the generated block and
+     * item names into a single en_us.json. Keeps English copy out of Java, mirroring how
+     * Create authors its own translations.
+     */
+    private void registerLangPartials() {
+        REGISTRATE.addDataGenerator(ProviderType.LANG, provider ->
+                ExampleLangMerger.mergeInto(provider::add));
+    }
+
+    /**
+     * Feeds the Ponder scenes' text (titles and captions) into Registrate's lang provider
+     * so runData writes it into the same en_us.json as the block and item names. The
+     * registered callback only runs during data generation, so it is safe to touch the
+     * client-only PonderIndex from here.
+     */
+    private void registerPonderLang() {
+        REGISTRATE.addDataGenerator(ProviderType.LANG, provider -> {
+            PonderIndex.addPlugin(new ExamplePonderPlugin());
+            PonderIndex.getLangAccess().provideLang(ID, provider::add);
+        });
     }
 
     /**

@@ -1,0 +1,10 @@
+{
+	"itemGroup.examplemod": "Example Create Addon",
+
+	"gui.examplemod.example_generator.generating": "Generating rotation",
+	"gui.examplemod.example_kinetic.consuming": "Drawing stress",
+	"gui.examplemod.rpm": "%s RPM",
+	"gui.examplemod.su": "%s SU",
+
+	"display_source.examplemod.example_source": "Kinetic Speed"
+}

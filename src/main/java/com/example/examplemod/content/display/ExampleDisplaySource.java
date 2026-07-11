@@ -2,12 +2,12 @@ package com.example.examplemod.content.display;
 
 import java.util.List;
 
+import com.example.examplemod.Lang;
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -23,7 +23,7 @@ public class ExampleDisplaySource extends DisplaySource {
         BlockEntity source = context.getSourceBlockEntity();
         if (source instanceof KineticBlockEntity kinetic) {
             int rpm = Math.round(kinetic.getSpeed());
-            return List.of(Component.literal(rpm + " RPM"));
+            return List.of(Lang.translate(Lang.RPM, rpm));
         }
         return EMPTY;
     }

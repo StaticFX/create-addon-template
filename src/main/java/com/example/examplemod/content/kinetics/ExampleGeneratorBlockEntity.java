@@ -2,6 +2,7 @@ package com.example.examplemod.content.kinetics;
 
 import java.util.List;
 
+import com.example.examplemod.Lang;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 
 import net.minecraft.ChatFormatting;
@@ -39,10 +40,9 @@ public class ExampleGeneratorBlockEntity extends GeneratingKineticBlockEntity {
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
         tooltip.add(Component.literal("    ")
-                .append(Component.translatable("gui.examplemod.example_generator.generating")
-                        .withStyle(ChatFormatting.GRAY)));
+                .append(Lang.translate(Lang.GENERATOR_GENERATING).withStyle(ChatFormatting.GRAY)));
         tooltip.add(Component.literal("        ")
-                .append(Component.literal(GENERATED_RPM + " RPM").withStyle(ChatFormatting.AQUA)));
+                .append(Lang.translate(Lang.RPM, GENERATED_RPM).withStyle(ChatFormatting.AQUA)));
         return true;
     }
 }

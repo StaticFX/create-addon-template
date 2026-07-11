@@ -18,11 +18,13 @@ The template ships small examples of the most common Create addon
 additions. All of their recipes and assets are produced by data generation
 (`./gradlew runData`) into `src/generated/resources` — nothing is hand-written.
 
-- **SU-consuming kinetic block** — `content/kinetics/ExampleKineticBlock` +
+- **SU-consuming kinetic block + goggle overlay** — `content/kinetics/ExampleKineticBlock` +
   `ExampleKineticBlockEntity`. An encased-shaft-style block that joins the kinetic
   network and draws Stress Units. Its stress impact is registered in
-  `ExampleMod#registerStressValues` via `BlockStressValues.IMPACTS`, and it reuses
-  Create's `KineticBlockEntityRenderer` to spin.
+  `ExampleMod#registerStressValues` via `BlockStressValues.IMPACTS` (from the shared
+  `STRESS_IMPACT` constant), and it reuses Create's `KineticBlockEntityRenderer` to spin.
+  It overrides `addToGoggleTooltip` to add a live "Drawing stress" readout beneath the
+  default kinetic stats.
 - **Kinetic generator + goggle overlay** — `content/kinetics/ExampleGeneratorBlock` +
   `ExampleGeneratorBlockEntity`. The counterpart source: it *adds* stress capacity
   (`BlockStressValues.CAPACITIES`) and produces rotation via `getGeneratedSpeed()`,
@@ -39,9 +41,24 @@ additions. All of their recipes and assets are produced by data generation
   transitional "incomplete" item.
 - **Ponder plugin** — `content/ponder/ExamplePonderPlugin` +
   `ExamplePonderScenes`. Wires up Create's in-game animated manual for the addon and
-  is registered client-side in `ExampleMod#onClientSetup`. The scene body is left as
-  a stub — build the `example_kinetic_block.nbt` schematic and animate it to finish
-  it.
+  is registered client-side in `ExampleMod#onClientSetup`. Ships a worked scene driven
+  by the `assets/examplemod/ponder/example_ponder.nbt` schematic (two Mechanical Arms and
+  a sign), demonstrating base-plate reveal, camera panning, and outlined captions. Its
+  scene text is generated into `en_us.json` through Registrate's lang provider
+  (`ExampleMod#registerPonderLang`), so it appears after `./gradlew runData`.
+
+- **Create-style item tooltip** — the `example_item`'s tooltip is authored as lang keys in
+  `assets/examplemod/lang/default/tooltips.json` (`.tooltip.summary` +
+  `.tooltip.condition1`/`.behaviour1`). The `ItemDescription` modifier set up on the
+  Registrate in `ExampleMod` reads them and adds the "Hold Shift" prompt and highlight
+  styling automatically — no custom `Item` class needed. Wrap words in `_underscores_` to
+  highlight them.
+- **Lang: keys in code, copy in JSON** — like Create, English strings live in hand-authored
+  partials under `assets/examplemod/lang/default/` (`interface.json`, `tooltips.json`), while
+  `Lang` holds only translation keys. `datagen/ExampleLangMerger` merges the partials into the
+  `en_us.json` that Registrate generates for block/item names, so `./gradlew runData` writes a
+  single lang file. Add copy by editing a partial (or dropping a new one and listing it in
+  `ExampleLangMerger`) — never by putting English in Java.
 
 Item models borrow existing vanilla textures so the template builds with **no `.png`
 files of its own** — swap the textures in `AllItems`/`AllBlocks` for your own art.
