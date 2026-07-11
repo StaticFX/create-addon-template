@@ -71,20 +71,6 @@ public class ExampleMod {
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Common setup...");
-        event.enqueueWork(this::registerStressValues);
-    }
-
-    /**
-     * Registers stress values: an impact for the consumer and a capacity for the
-     * generator. Keeping them here rather than in the block entities makes the values
-     * configurable and lets them surface in tooltips.
-     */
-    private void registerStressValues() {
-        // Consumers register an IMPACT (SU drawn per RPM)...
-        BlockStressValues.IMPACTS.register(AllBlocks.EXAMPLE_KINETIC_BLOCK.get(),
-                () -> (double) ExampleKineticBlockEntity.STRESS_IMPACT);
-        // ...generators register a CAPACITY (SU added to the network per RPM).
-        BlockStressValues.CAPACITIES.register(AllBlocks.EXAMPLE_GENERATOR_BLOCK.get(), () -> 256.0);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

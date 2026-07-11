@@ -54,6 +54,7 @@ public class AllBlocks {
                 BlockStateGen.axisBlock(ctx, prov, state -> model);
             })
             .transform(DisplaySource.displaySource(AllDisplaySources.EXAMPLE_SOURCE))
+            .onRegister(b -> BlockStressValues.CAPACITIES.register(b, () -> 128))
             .item()
             .build()
             .register();
