@@ -6,6 +6,7 @@
   "examplemod.ponder.example_ponder.text_1": "Every block here is loaded from example_ponder.nbt",
   "examplemod.ponder.example_ponder.text_2": "Block entities like this sign render and tick just as they do in-world",
   "examplemod.ponder.example_ponder.text_3": "Two Mechanical Arms flank the sign, proving Create's own blocks work too",
+  "examplemod.ponder.example_ponder.text_4": "You can also apply kinetic speeds to certain blocks",
   "gui.examplemod.example_generator.generating": "Generating rotation",
   "gui.examplemod.example_kinetic.consuming": "Drawing stress",
   "gui.examplemod.rpm": "%s RPM",
