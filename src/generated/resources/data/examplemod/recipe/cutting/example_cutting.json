@@ -1,0 +1,15 @@
+{
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_log"
+    }
+  ],
+  "processing_time": 50,
+  "results": [
+    {
+      "count": 6,
+      "id": "minecraft:oak_planks"
+    }
+  ]
+}

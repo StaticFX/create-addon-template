@@ -12,10 +12,10 @@ A ready-to-use template for building [Create](https://modrinth.com/mod/create) m
 - **GitHub Actions** — automatic builds on push/PR
 - **Gradle 8.10** with configuration cache enabled
 
-## Worked Examples
+## Examples
 
-The template ships small, self-contained examples of the most common Create addon
-building blocks. All of their recipes and assets are produced by data generation
+The template ships small examples of the most common Create addon
+additions. All of their recipes and assets are produced by data generation
 (`./gradlew runData`) into `src/generated/resources` — nothing is hand-written.
 
 - **SU-consuming kinetic block** — `content/kinetics/ExampleKineticBlock` +
@@ -23,12 +23,20 @@ building blocks. All of their recipes and assets are produced by data generation
   network and draws Stress Units. Its stress impact is registered in
   `ExampleMod#registerStressValues` via `BlockStressValues.IMPACTS`, and it reuses
   Create's `KineticBlockEntityRenderer` to spin.
+- **Kinetic generator + goggle overlay** — `content/kinetics/ExampleGeneratorBlock` +
+  `ExampleGeneratorBlockEntity`. The counterpart source: it *adds* stress capacity
+  (`BlockStressValues.CAPACITIES`) and produces rotation via `getGeneratedSpeed()`,
+  and adds custom lines to the Engineer's Goggles tooltip
+  (`IHaveGoggleInformation#addToGoggleTooltip`).
+- **Display Link source** — `content/display/ExampleDisplaySource` + `AllDisplaySources`.
+  A `DisplaySource` that reports a block's kinetic speed onto a Display Board; attached
+  to the generator in `AllBlocks` via `.transform(DisplaySource.displaySource(...))`.
+- **Processing recipes** — `datagen/Example*RecipeGen` for crushing, milling, pressing,
+  cutting, mixing (heated), compacting, filling & emptying (fluids), and deploying,
+  plus **splashing** and **haunting** fan processing.
 - **Sequenced assembly recipe** — `datagen/ExampleSequencedAssemblyGen`. An item is
   processed through a Deployer then a Mechanical Press, looping twice, using a
   transitional "incomplete" item.
-- **Fan processing recipes** — `datagen/ExampleWashingRecipeGen` (splashing / bulk
-  washing) and `datagen/ExampleHauntingRecipeGen` (haunting). These run when items
-  pass through an Encased Fan's air stream over water / soul fire.
 - **Ponder plugin** — `content/ponder/ExamplePonderPlugin` +
   `ExamplePonderScenes`. Wires up Create's in-game animated manual for the addon and
   is registered client-side in `ExampleMod#onClientSetup`. The scene body is left as
@@ -40,11 +48,28 @@ files of its own** — swap the textures in `AllItems`/`AllBlocks` for your own 
 
 ## Getting Started
 
-### 1. Use this template
+### Quickest: scaffold with create-addon-cli
+
+Use the [create-addon-cli](https://github.com/StaticFX/create-addon-cli) tool for quick scaffolding
+
+```bash
+npm create addon-cli@latest
+# or
+npx create-addon-cli my-mod --name "Sick Mod"
+```
+
+It clones this template and rebrands every `Example` / `examplemod` reference to your
+mod. The scaffolder lives in its own repo,
+[`create-addon-cli`](https://github.com/StaticFX/create-addon-cli). Skip straight to
+[Build and run](#build-and-run).
+
+### Or: use the GitHub template
+
+#### 1. Use this template
 
 Click **"Use this template"** on GitHub, or clone and rename.
 
-### 2. Rename it to your mod
+#### 2. Rename it to your mod
 
 Run the bootstrap task once — it rewrites every `Example` / `examplemod` reference,
 moves the Java package, renames the `Example*` classes and the mixin config, and
@@ -80,7 +105,7 @@ mod_license=MIT
    update the `package` path inside it
 </details>
 
-### 3. Build and run
+### Build and run
 
 ```bash
 ./gradlew build          # Build the mod
@@ -88,6 +113,10 @@ mod_license=MIT
 ./gradlew runServer      # Launch a dedicated server
 ./gradlew runData        # Run data generators
 ```
+
+## Where to start?
+
+1. Go into your ExampleMod.java class to get a quick overview over what is defined and where exactly.
 
 ## License
 

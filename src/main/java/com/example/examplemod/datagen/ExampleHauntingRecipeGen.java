@@ -11,15 +11,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 
 /**
- * Fan processing recipe example: <b>Haunting</b>.
- * <p>
- * A haunting recipe runs when items pass through the air stream of an Encased Fan
- * that is blowing through Soul Fire. {@link HauntingRecipeGen#convert} is a shortcut
- * for a 1-in / 1-out conversion.
+ * Haunting recipe generator. The convert helper is shorthand for a single-input,
+ * single-output recipe.
  */
 public class ExampleHauntingRecipeGen extends HauntingRecipeGen {
 
-    // Haunt the example item to obtain the example result.
     GeneratedRecipe EXAMPLE = convert(AllItems.EXAMPLE_ITEM.get(), AllItems.EXAMPLE_RESULT.get());
 
     public ExampleHauntingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

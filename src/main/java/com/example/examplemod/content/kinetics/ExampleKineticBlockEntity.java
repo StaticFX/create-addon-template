@@ -7,16 +7,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Block entity for {@link ExampleKineticBlock}.
- * <p>
- * Extending {@link KineticBlockEntity} makes this block part of Create's kinetic
- * network: it will spin when connected to a running shaft/cogwheel and it draws
- * Stress Units (SU) from the network.
- * <p>
- * The amount of SU it consumes ("stress impact") is registered in
- * {@code ExampleMod#registerStressValues} via {@code BlockStressValues.IMPACTS}.
- * That is the idiomatic way to give a block a stress impact — it also makes the
- * value show up in the Engineer's Goggles tooltip and in Ponder.
+ * Block entity for the example kinetic block. Extending KineticBlockEntity ties it
+ * into the kinetic network as a consumer. Its stress impact is registered in
+ * ExampleMod rather than here, which keeps that value in one place and configurable.
  */
 public class ExampleKineticBlockEntity extends KineticBlockEntity {
 

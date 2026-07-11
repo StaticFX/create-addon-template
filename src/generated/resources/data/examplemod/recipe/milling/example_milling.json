@@ -1,0 +1,14 @@
+{
+  "type": "create:milling",
+  "ingredients": [
+    {
+      "item": "minecraft:cobblestone"
+    }
+  ],
+  "processing_time": 100,
+  "results": [
+    {
+      "id": "minecraft:sand"
+    }
+  ]
+}

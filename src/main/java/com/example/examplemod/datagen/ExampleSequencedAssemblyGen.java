@@ -14,19 +14,12 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 
 /**
- * Sequenced assembly recipe example.
- * <p>
- * Sequenced assembly is Create's multi-step crafting: an item rides a belt/depot
- * and passes several machines in order (here: a Deployer, then a Mechanical Press),
- * repeating for a number of loops before yielding the result.
- * <p>
- * Recipes are declared as fields; the {@code create(...)} helper collects them and
- * {@link com.simibubi.create.api.data.recipe.BaseRecipeProvider#buildRecipes} emits
- * them to {@code src/generated/resources} when {@code runData} runs.
+ * Sequenced assembly recipe generator. Shows the multi-step form: a transitional item
+ * carried between steps, a loop count, and per-step sub-recipes (a deployer
+ * application followed by a press).
  */
 public class ExampleSequencedAssemblyGen extends SequencedAssemblyRecipeGen {
 
-    // Iron ingot -> deploy a copper ingot onto it, then press it; repeat twice -> example result.
     GeneratedRecipe EXAMPLE = create("example_result", b -> b
             .require(Items.IRON_INGOT)
             .transitionTo(AllItems.INCOMPLETE_EXAMPLE.get())

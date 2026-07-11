@@ -11,13 +11,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Example kinetic block. Extends RotatedPillarKineticBlock, which gives it an axis
- * property and shaft connections on both ends of that axis, and implements IBE to
- * bind it to ExampleKineticBlockEntity.
+ * Example kinetic generator. It uses the same axle-style base as ExampleKineticBlock;
+ * the difference is entirely in the block entity, ExampleGeneratorBlockEntity.
  */
-public class ExampleKineticBlock extends RotatedPillarKineticBlock implements IBE<ExampleKineticBlockEntity> {
+public class ExampleGeneratorBlock extends RotatedPillarKineticBlock implements IBE<ExampleGeneratorBlockEntity> {
 
-    public ExampleKineticBlock(Properties properties) {
+    public ExampleGeneratorBlock(Properties properties) {
         super(properties);
     }
 
@@ -32,12 +31,12 @@ public class ExampleKineticBlock extends RotatedPillarKineticBlock implements IB
     }
 
     @Override
-    public Class<ExampleKineticBlockEntity> getBlockEntityClass() {
-        return ExampleKineticBlockEntity.class;
+    public Class<ExampleGeneratorBlockEntity> getBlockEntityClass() {
+        return ExampleGeneratorBlockEntity.class;
     }
 
     @Override
-    public BlockEntityType<? extends ExampleKineticBlockEntity> getBlockEntityType() {
-        return AllBlockEntityTypes.EXAMPLE_KINETIC.get();
+    public BlockEntityType<? extends ExampleGeneratorBlockEntity> getBlockEntityType() {
+        return AllBlockEntityTypes.EXAMPLE_GENERATOR.get();
     }
 }

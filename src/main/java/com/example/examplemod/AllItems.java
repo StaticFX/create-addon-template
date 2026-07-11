@@ -6,12 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 /**
- * Item registration using Create's Registrate.
- * <p>
- * Each item overrides its model to borrow an existing vanilla texture, so the
- * template generates working assets with no {@code .png} files of its own. Replace
- * the texture in {@code .model(...)} (or delete the override and add
- * {@code assets/examplemod/textures/item/<name>.png}) with your own art.
+ * Item registration. Each item overrides its model to borrow a vanilla texture, so the
+ * template builds with no texture files of its own. Point the model at your own texture,
+ * or remove the override and add assets/examplemod/textures/item/name.png.
  */
 public class AllItems {
 
@@ -21,8 +18,7 @@ public class AllItems {
             .register();
 
     /**
-     * Final output of the sequenced assembly example recipe
-     * ({@code datagen/ExampleSequencedAssemblyGen}) and the haunting recipe.
+     * Output of the sequenced assembly and several other example recipes.
      */
     public static final ItemEntry<Item> EXAMPLE_RESULT = ExampleMod.REGISTRATE
             .item("example_result", Item::new)
@@ -30,9 +26,7 @@ public class AllItems {
             .register();
 
     /**
-     * The "in-progress" item shown on the belt/depot while the sequenced assembly
-     * recipe is running. Sequenced assembly requires a dedicated transitional item
-     * (see {@code SequencedAssemblyRecipeBuilder#transitionTo}).
+     * Transitional item carried between the steps of the sequenced assembly recipe.
      */
     public static final ItemEntry<Item> INCOMPLETE_EXAMPLE = ExampleMod.REGISTRATE
             .item("incomplete_example", Item::new)

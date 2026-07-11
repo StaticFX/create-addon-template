@@ -3,7 +3,16 @@ package com.example.examplemod;
 import java.util.concurrent.CompletableFuture;
 
 import com.example.examplemod.content.ponder.ExamplePonderPlugin;
+import com.example.examplemod.datagen.ExampleCompactingRecipeGen;
+import com.example.examplemod.datagen.ExampleCrushingRecipeGen;
+import com.example.examplemod.datagen.ExampleCuttingRecipeGen;
+import com.example.examplemod.datagen.ExampleDeployingRecipeGen;
+import com.example.examplemod.datagen.ExampleEmptyingRecipeGen;
+import com.example.examplemod.datagen.ExampleFillingRecipeGen;
 import com.example.examplemod.datagen.ExampleHauntingRecipeGen;
+import com.example.examplemod.datagen.ExampleMillingRecipeGen;
+import com.example.examplemod.datagen.ExampleMixingRecipeGen;
+import com.example.examplemod.datagen.ExamplePressingRecipeGen;
 import com.example.examplemod.datagen.ExampleSequencedAssemblyGen;
 import com.example.examplemod.datagen.ExampleWashingRecipeGen;
 import com.simibubi.create.api.stress.BlockStressValues;
@@ -44,7 +53,12 @@ public class ExampleMod {
         // Title for the creative tab (the tab's Component uses this key). Registered
         // through Registrate so it ends up in the generated lang file with everything else.
         REGISTRATE.addRawLang("itemGroup." + ID, "Example Create Addon");
+        // Goggle overlay text for the generator (see ExampleGeneratorBlockEntity).
+        REGISTRATE.addRawLang("gui.examplemod.example_generator.generating", "Generating rotation");
+        // Name shown for the Display Link source (see AllDisplaySources / ExampleDisplaySource).
+        REGISTRATE.addRawLang("display_source.examplemod.example_source", "Kinetic Speed");
         AllItems.register();
+        AllDisplaySources.register();
         AllBlocks.register();
         AllBlockEntityTypes.register();
 
@@ -63,27 +77,27 @@ public class ExampleMod {
     }
 
     /**
-     * Give kinetic blocks their Stress Unit impact. Registering here (rather than
-     * hard-coding it in the block entity) makes the value configurable, and lets
-     * Create surface it in the Engineer's Goggles tooltip and in Ponder.
-     * <p>
-     * The {@link java.util.function.DoubleSupplier} is the SU drawn per RPM.
+     * Registers stress values: an impact for the consumer and a capacity for the
+     * generator. Keeping them here rather than in the block entities makes the values
+     * configurable and lets them surface in tooltips.
      */
     private void registerStressValues() {
+        // Consumers register an IMPACT (SU drawn per RPM)...
         BlockStressValues.IMPACTS.register(AllBlocks.EXAMPLE_KINETIC_BLOCK.get(), () -> 8.0);
+        // ...generators register a CAPACITY (SU added to the network per RPM).
+        BlockStressValues.CAPACITIES.register(AllBlocks.EXAMPLE_GENERATOR_BLOCK.get(), () -> 256.0);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.info("Client setup...");
         // Ponder is client-only, so its plugin is registered here rather than in
-        // common setup. This mirrors how Create registers its own CreatePonderPlugin.
+        // common setup.
         event.enqueueWork(() -> PonderIndex.addPlugin(new ExamplePonderPlugin()));
     }
 
     /**
-     * Register data generators. Create's recipe generators emit their JSON into
-     * {@code src/generated/resources} when you run {@code ./gradlew runData}.
-     * (Registrate registers its own block/item models, blockstates and lang.)
+     * Registers the data generators. Running gradlew runData writes their output into
+     * src/generated/resources.
      */
     private void onGatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
@@ -93,5 +107,14 @@ public class ExampleMod {
         generator.addProvider(event.includeServer(), new ExampleSequencedAssemblyGen(output, registries));
         generator.addProvider(event.includeServer(), new ExampleWashingRecipeGen(output, registries));
         generator.addProvider(event.includeServer(), new ExampleHauntingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleCrushingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleMillingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExamplePressingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleCuttingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleMixingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleCompactingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleFillingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleEmptyingRecipeGen(output, registries));
+        generator.addProvider(event.includeServer(), new ExampleDeployingRecipeGen(output, registries));
     }
 }

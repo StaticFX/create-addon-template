@@ -1,0 +1,17 @@
+{
+  "type": "create:emptying",
+  "ingredients": [
+    {
+      "item": "minecraft:water_bucket"
+    }
+  ],
+  "results": [
+    {
+      "id": "minecraft:bucket"
+    },
+    {
+      "amount": 1000,
+      "id": "minecraft:water"
+    }
+  ]
+}

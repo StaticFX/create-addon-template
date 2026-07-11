@@ -1,5 +1,8 @@
 {
+  "block.examplemod.example_generator_block": "Example Generator Block",
   "block.examplemod.example_kinetic_block": "Example Kinetic Block",
+  "display_source.examplemod.example_source": "Kinetic Speed",
+  "gui.examplemod.example_generator.generating": "Generating rotation",
   "item.examplemod.example_item": "Example Item",
   "item.examplemod.example_result": "Example Result",
   "item.examplemod.incomplete_example": "Incomplete Example",
