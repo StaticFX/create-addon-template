@@ -83,19 +83,35 @@ class RenameModTask extends DefaultTask {
             s = s.replace('examplemod', modId)
             return s
         }
+        // resource file + namespace dir names (the assets/examplemod folder, the mixin
+        // config, and id-prefixed files like example_ponder.nbt).
+        Closure<String> transformResourceName = { String s ->
+            s = s.replace('examplemod', modId)                                    // namespace folder / mixin config
+            s = s.replaceAll('Example(?=[A-Z])', Matcher.quoteReplacement(pascal))
+            s = s.replace('example_', modId + '_')                               // example_ponder.nbt -> <id>_ponder.nbt
+            return s
+        }
 
         logger.lifecycle("Renaming template -> name='${display}', id='${modId}', group='${group}', classes='${pascal}*'")
 
         Path root = projectRoot.toPath()
         Path srcJava = root.resolve('src/main/java')
-        Path mixins = root.resolve('src/main/resources/examplemod.mixins.json')
+        Path resources = root.resolve('src/main/resources')
 
-        // 1. Rewrite file contents (config files + every .java).
-        List<Path> contentFiles = []
+        // 1. Rewrite file contents (config files + resource text + every .java).
+        Set<Path> contentFiles = new LinkedHashSet<>()
         ['gradle.properties', 'README.md'].each {
             Path p = root.resolve(it); if (Files.exists(p)) contentFiles << p
         }
-        if (Files.exists(mixins)) contentFiles << mixins
+        // Resource text files: lang jsons, mixin config, pack.mcmeta. Binary resources
+        // (e.g. the .nbt schematic, .png textures) are excluded so they are never mangled.
+        List<String> textExt = ['.json', '.mcmeta', '.txt', '.toml', '.cfg']
+        if (Files.exists(resources)) {
+            Files.walk(resources).withCloseable { st ->
+                st.filter { Path p -> Files.isRegularFile(p) && textExt.any { e -> p.toString().endsWith(e) } }
+                        .forEach { contentFiles << it }
+            }
+        }
         if (Files.exists(srcJava)) {
             Files.walk(srcJava).withCloseable { st ->
                 st.filter { Files.isRegularFile(it) && it.toString().endsWith('.java') }
@@ -136,9 +152,24 @@ class RenameModTask extends DefaultTask {
             }
         }
 
-        // 4. Rename the mixin config to <id>.mixins.json.
-        if (Files.exists(mixins)) {
-            Files.move(mixins, mixins.resolveSibling(modId + '.mixins.json'))
+        // 4. Rename resource files (mixin config, id-prefixed files like the ponder
+        //    schematic) and the namespace directory (assets/examplemod -> assets/<id>).
+        if (Files.exists(resources)) {
+            // Files first, while they still live inside the examplemod namespace folder.
+            List<Path> resFiles = Files.walk(resources).withCloseable { st ->
+                st.filter { Files.isRegularFile(it) }.collect(Collectors.toList())
+            }
+            resFiles.each { Path p ->
+                String nn = transformResourceName(p.fileName.toString())
+                if (nn != p.fileName.toString()) Files.move(p, p.resolveSibling(nn))
+            }
+            // Then the namespace dirs themselves (assets/examplemod, data/examplemod, ...).
+            List<Path> nsDirs = Files.walk(resources).withCloseable { st ->
+                st.filter { Files.isDirectory(it) && it.fileName.toString() == 'examplemod' }
+                        .sorted(Comparator.reverseOrder())
+                        .collect(Collectors.toList())
+            }
+            nsDirs.each { Path d -> Files.move(d, d.resolveSibling(modId)) }
         }
 
         // 5. Drop generated resources — they still say "examplemod"; regenerate with runData.
